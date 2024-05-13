@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de Senderos</title>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-steps@%5E1.0/dist/bootstrap-steps.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+    <h2>Crear</h2>
+    <div>
+        <ul class="steps">
+            <li id="pasoCrear" class="step step-active">
+                <div class="step-content">
+                    <span class="step-circle">1</span>
+                    <span class="step-text">Crear</span>
+                </div>
+            </li>
+            <li id="pasoGPX" class="step">
+                <div class="step-content">
+                    <span class="step-circle">2</span>
+                    <span the="step-text">GPX</span>
+                </div>
+            </li>
+            <li id="pasoMetadatos" class="step">
+                <div class="step-content">
+                    <span class="step-circle">3</span>
+                    <span class="step-text">Metadatos</span>
+                </div>
+            </li>
+            <li id="pasoRevision" class="step">
+                <div class="step-content">
+                    <span class="step-circle">4</span>
+                    <span class="step-text">Revisión</span>
+                </div>
+            </li>
+        </ul>
+        <span id="descripcionPaso"><h3>Seleccionar Ubicación</h3></span>
+    </div>
+    <form id="formularioSendero" enctype="multipart/form-data">
+        <!-- Paso 1 -->
+        <div class="form-group">
+            <label for="selectProvincia">Provincia</label>
+            <select class="form-control" id="selectProvincia">
+                <option value="">Seleccione una provincia</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="selectLocalidad">Localidad</label>
+            <select class="form-control" id="selectLocalidad" disabled>
+                <option value="">Seleccione primero una provincia</option>
+            </select>
+        </div>
+        <button type="button" class="btn btn-primary" id="botonCrearSendero">Crear Sendero</button>
+        <!-- Paso 2 -->
+        <div class="form-group" id="contenedorCargaArchivo" style="display: none;">
+            <label for="archivoGPX">Archivo GPX</label>
+            <input type="file" class="form-control-file" id="archivoGPX">
+        </div>
+        <button type="button" class="btn btn-primary" id="botonSubirGPX" style="display: none;">Subir GPX</button>
+        
+        <div id="formularioMetadatos" class="form-group" style="display: none;">
+            <!--Paso 3 -->
+            <label for="nombreSenda">Nombre Senda</label>
+            <input type="text" class="form-control" id="nombreSenda" value="" placeholder="Nombre de la Senda">
+            <label for="descripcionSenda">Descripción</label>
+            <input type="text" class="form-control" id="descripcionSenda" value="" placeholder="Descripción">
+            <button type="button" class="btn btn-primary" id="botonActualizarGPX">Actualizar GPX y BD</button>
+        </div>
+    </form>
+</div>
+       $(document).ready(function() {
+    var idSendero; // Variable para almacenar el ID del sendero
+    $('.select2').select2({ language: "es" });
+
+    // Cargar provincias
+    $.getJSON('load_provincias.php', function(data) {
+        data.forEach(function(provincia) {
+            $('#selectProvincia').append(new Option(provincia.provincia, provincia.id));
+        });
+    });
+
+    // Cargar localidades al cambiar provincia
+    $('#selectProvincia').on('change', function() {
+        var idProvincia = $(this).val();
+        $('#selectLocalidad').prop('disabled', false).empty().append('<option value="">Seleccione una localidad</option>');
+
+        if (idProvincia) {
+            $.ajax({
+                url: 'load_localidades.php',
+                type: 'GET',
+                data: { id_provincia: idProvincia },
+                dataType: 'json',
+                success: function(data) {
+                    if (data.length > 0) {
+                        data.forEach(function(localidad) {
+                            $('#selectLocalidad').append(new Option(localidad.localidad, localidad.id));
+                        });
+                    } else {
+                        $('#selectLocalidad').append('<option value="">No hay localidades disponibles</option>');
+                    }
+                }
+            });
+        } else {
+            $('#selectLocalidad').prop('disabled', true);
+        }
+    });
+
+    // Manejar el envío del formulario para crear el sendero
+    $('#botonCrearSendero').on('click', function() {
+        var idProvincia = $('#selectProvincia').val();
+        var idLocalidad = $('#selectLocalidad').val();
+
+        if (idProvincia && idLocalidad) {
+            $.ajax({
+                url: 'crear_sendero.php',
+                type: 'POST',
+                data: { id_provincia: idProvincia, id_localidad: idLocalidad },
+                success: function(response) {
+                    idSendero = response; // Guardar el ID del sendero
+                    $('#selectProvincia').closest('.form-group').hide();
+                $('#selectLocalidad').closest('.form-group').hide();
+                $('#botonCrearSendero').hide();
+                
+                $('#pasoCrear').removeClass('step-active').addClass('step-success');
+                $('#pasoGPX').addClass('step-active');
+                $('#descripcionPaso').html('<h3>Seleccionar Archivo GPX</h3>');
+                $('#contenedorCargaArchivo').show();
+                $('#botonSubirGPX').show();
+                },
+                error: function() {
+                    alert('Error al crear el sendero');
+                }
+            });
+        } else {
+            alert('Por favor, seleccione una provincia y una localidad válidas.');
+        }
+    });
+
+    // Manejar la carga del archivo GPX
+    $('#botonSubirGPX').on('click', function() {
+        var file = $('#archivoGPX')[0].files[0];
+        if (!file) {
+            alert('Por favor, seleccione un archivo GPX para subir.');
+            return;
+        }
+
+        var formData = new FormData();
+        formData.append('fileGPX', file);
+        formData.append('senderoId', idSendero);
+
+        $.ajax({
+            url: 'upload_gpx.php',
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+                $('#pasoGPX').removeClass('step-active').addClass('step-success');
+                $('#pasoMetadatos').addClass('step-active');
+                $('#descripcionPaso').html('<h3>Introduzca los Metadatos del Sendero</h3>');
+                $('#contenedorCargaArchivo').hide();
+                $('#botonSubirGPX').hide();
+                $('#formularioMetadatos').show();
+                $('#nombreSenda').val(response.data.name);
+                $('#descripcionSenda').val(response.data.description);
+            },
+            error: function() {
+                alert('Error al cargar el archivo GPX.');
+            }
+        });
+    });
+    $('#botonActualizarGPX').on('click', function() {
+    var nombreSenda = $('#nombreSenda').val();
+    var descripcionSenda = $('#descripcionSenda').val();
+
+    if (nombreSenda && descripcionSenda) {
+        $.ajax({
+            url: 'actualizar_metadatos_gpx.php',
+            type: 'POST',
+            data: {
+                senderoId: idSendero,
+                name: nombreSenda,
+                description: descripcionSenda
+            },
+            success: function(response) {
+                console.log(response)
+                alert('Metadatos actualizados con éxito.');
+                $('#pasoMetadatos').removeClass('step-active').addClass('step-success');
+                $('#pasoRevision').addClass('step-active');
+                $('#descripcionPaso').html('<h3>Revisar los Datos del Sendero</h3>');
+            },
+            error: function() {
+                alert('Error al actualizar los metadatos del GPX.');
+            }
+        });
+    } else {
+        alert('Por favor, complete los campos de nombre y descripción.');
+    }
+});
+
+});
+ // Aquí iría el script de JavaScript con la funcionalidad descrita previamente.
+    </script>
+</body>
+</html>

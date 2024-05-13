@@ -1,0 +1,62 @@
+#map {
+    height: 75vh; /* Ajusta el alto del mapa al 80% de la altura de la pantalla */
+}
+/* #info {
+    position: fixed;
+    bottom: 5%; 
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(255, 255, 255, 0.9); 
+    border-radius: 5px;
+    box-shadow: 0 0 5px #000000;
+    padding: 10px;
+    z-index: 1; 
+    text-align: center;
+    width: 90%; 
+    max-width: 500px; 
+} */
+
+#titulo {
+    position: absolute; 
+    top: 20%;
+    left: 60%;
+    transform: translateX(-50%);
+    width: 20%;
+    z-index: 1000;
+    background-color: #27752780; /* Fondo semi-transparente */
+    color: rgb(255, 255, 255);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    display: block;
+    cursor: grab; //* Asegura que la tarjeta se muestre inicialmente */
+}
+
+#titulo .close {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    border: none;
+    background: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+#titulo h4 {
+    margin-bottom: 5px; /* Espacio reducido debajo del h4 */
+}
+
+#titulo h1 {
+    margin-top: 0; /* Elimina el espacio arriba del h1 */
+    margin-bottom: 10px; /* Espacio moderado debajo del h1 */
+}
+
+#titulo p {
+    margin-top: 0; /* Elimina el espacio arriba del párrafo */
+    text-align: justify; /* Justifica el texto del párrafo */
+}
+/* @media (max-width: 767px) {
+    #info {
+        font-size: 12px; /* Tamaño de fuente más pequeño para dispositivos móviles 
+        bottom: 10px; /* Menor espacio desde el fondo para evitar superposición con otros elementos 
+    } */

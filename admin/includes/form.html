@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de Senderos</title>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-steps@%5E1.0/dist/bootstrap-steps.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-gpx/1.5.0/gpx.min.js"></script>
+
+</head>
+<body>
+<div class="container mt-4">
+    <h2>Crear</h2>
+    <div>
+        <ul class="steps">
+            <li id="pasoCrear" class="step step-active">
+                <div class="step-content">
+                    <span class="step-circle">1</span>
+                    <span class="step-text">Crear</span>
+                </div>
+            </li>
+            <li id="pasoGPX" class="step">
+                <div class="step-content">
+                    <span class="step-circle">2</span>
+                    <span class="step-text">GPX</span>
+                </div>
+            </li>
+            <li id="pasoMetadatos" class="step">
+                <div class="step-content">
+                    <span class="step-circle">3</span>
+                    <span class="step-text">Metadatos</span>
+                </div>
+            </li>
+            <li id="pasoRevision" class="step">
+                <div class="step-content">
+                    <span class="step-circle">4</span>
+                    <span class="step-text">Revisión</span>
+                </div>
+            </li>
+        </ul>
+        <span id="descripcionPaso"><h3>Seleccionar Ubicación</h3></span>
+    </div>
+    <form id="formularioSendero" enctype="multipart/form-data">
+        <!-- Paso 1 -->
+        <div class="form-group">
+            <label for="selectProvincia">Provincia</label>
+            <select class="form-control select2" id="selectProvincia" name="id_provincia">
+                <!-- Opciones se cargarán dinámicamente -->
+            </select>
+            
+
+                <option value="">Seleccione una provincia</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="selectLocalidad">Localidad</label>
+            <select class="form-control select2" id="selectLocalidad" name="id_localidad" disabled>
+                <!-- Opciones se cargarán dinámicamente -->
+
+                <option value="">Seleccione primero una provincia</option>
+            </select>
+        </div>
+        <button type="button" class="btn btn-primary" id="botonCrearSendero">Crear Sendero</button>
+        <!-- Paso 2 -->
+        <div class="form-group" id="contenedorCargaArchivo" style="display: none;">
+            <label for="archivoGPX">Archivo GPX</label>
+            <input type="file" class="form-control-file" id="archivoGPX">
+        </div>
+        <button type="button" class="btn btn-primary" id="botonSubirGPX" style="display: none;">Subir GPX</button>
+        
+        <div id="formularioMetadatos" class="form-group" style="display: none;">
+            <!--Paso 3 -->
+            <label for="nombreSenda">Nombre Senda</label>
+            <input type="text" class="form-control" id="nombreSenda" value="" placeholder="Nombre de la Senda">
+            <label for="descripcionSenda">Descripción</label>
+            <input type="text" class="form-control" id="descripcionSenda" value="" placeholder="Descripción">
+            <button type="button" class="btn btn-primary" id="botonActualizarGPX">Actualizar GPX y BD</button>
+        </div>
+    </form>
+</div>
+<div id="contenedorMetadatos" style="display:none;"></div>
+    <div id="map" style="height: 400px; display: none;"></div>
+    <div id="waypointContainer" style="display:none;"></div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="trailRegistration.js"></script>
+    <script>
+        // Inicializar la clase cuando el DOM esté completamente cargado
+        document.addEventListener('DOMContentLoaded', function() {
+            const trailRegistration = new TrailRegistration();
+            trailRegistration.loadProvincias(); //
+        });
+    </script>
+</body>
+</html>

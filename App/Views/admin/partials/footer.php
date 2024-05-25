@@ -8,10 +8,13 @@
 </div>
 
 <!-- jQuery -->
-<script src="/public/admin/adminlte/plugins/jquery/jquery.min.js"></script>
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <!-- Bootstrap 4 -->
-<script src="/public/admin/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 <!-- AdminLTE App -->
-<script src="/public/admin/adminlte/js/adminlte.min.js"></script>
+<script src="/public/admin/adminlte/dist/js/adminlte.min.js"></script>
+<script src="/public/admin/adminlte/plugins/bs-stepper/js/bs-stepper.min.js"></script>
 </body>
+
 </html>

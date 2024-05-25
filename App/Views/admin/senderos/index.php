@@ -1,73 +1,76 @@
 <?php include __DIR__ . '/../partials/header.php'; ?>
 <?php include __DIR__ . '/../partials/sidebar.php'; ?>
 
+<!-- Content Wrapper -->
 <div class="content-wrapper">
-    <section class="content-header">
+    <div class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>Usuarios</h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="/public/admin/index.php/dashboard">Dashboard</a></li>
-                        <li class="breadcrumb-item active">Usuarios</li>
-                    </ol>
+                    <h1 class="m-0 text-dark">Senderos</h1>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
 
+    <!-- Main content -->
     <section class="content">
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">Listado de Usuarios</h3>
+                            <h3 class="card-title">Listado de Senderos</h3>
                             <div class="card-tools">
-                                <a href="/public/admin/index.php/users/create" class="btn btn-success">Nuevo Usuario</a>
+                                <a href="/public/admin/index.php/senderos/create" class="btn btn-success">Nuevo Sendero</a>
                             </div>
                         </div>
+                        <!-- /.card-header -->
                         <div class="card-body">
                             <table class="table table-bordered table-hover">
                                 <thead>
                                     <tr>
                                         <th>ID</th>
-                                        <th>Username</th>
-                                        <th>Email</th>
-                                        <th>Role</th>
+                                        <th>Nombre</th>
+                                        <th>Descripción</th>
+                                        <th>Provincia</th>
+                                        <th>Localidad</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php if (isset($users) && is_array($users)): ?>
-                                        <?php foreach ($users as $user): ?>
+                                    <?php if (isset($senderos) && is_array($senderos)): ?>
+                                        <?php foreach ($senderos as $sendero): ?>
                                             <tr>
-                                                <td><?php echo $user['id']; ?></td>
-                                                <td><?php echo $user['username']; ?></td>
-                                                <td><?php echo $user['email']; ?></td>
-                                                <td><?php echo $user['role']; ?></td>
+                                                <td><?php echo $sendero['id']; ?></td>
+                                                <td><?php echo $sendero['nombre']; ?></td>
+                                                <td><?php echo $sendero['descripcion']; ?></td>
+                                                <td><?php echo $sendero['provincia']; ?></td>
+                                                <td><?php echo $sendero['localidad']; ?></td>
                                                 <td>
-                                                    <a href="/public/admin/index.php/users/edit/<?php echo $user['id']; ?>" class="btn btn-warning">Editar</a>
-                                                    <button class="btn btn-danger" onclick="confirmDelete(<?php echo $user['id']; ?>)">Eliminar</button>
+                                                    <a href="/public/admin/index.php/senderos/edit/<?php echo $sendero['id']; ?>" class="btn btn-warning">Editar</a>
+                                                    <button class="btn btn-danger" onclick="confirmDelete(<?php echo $sendero['id']; ?>)">Eliminar</button>
                                                 </td>
                                             </tr>
                                         <?php endforeach; ?>
                                     <?php else: ?>
                                         <tr>
-                                            <td colspan="5">No hay usuarios disponibles</td>
+                                            <td colspan="6">No hay senderos disponibles</td>
                                         </tr>
                                     <?php endif; ?>
                                 </tbody>
                             </table>
                         </div>
+                        <!-- /.card-body -->
                     </div>
+                    <!-- /.card -->
                 </div>
             </div>
         </div>
     </section>
+    <!-- /.content -->
 </div>
+<!-- /.content-wrapper -->
 
 <!-- Modal de Confirmación -->
 <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
@@ -80,7 +83,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                ¿Estás seguro de que deseas eliminar este usuario?
+                ¿Estás seguro de que deseas eliminar este sendero?
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
@@ -105,7 +108,7 @@
     let deleteUrl = '';
 
     function confirmDelete(id) {
-        deleteUrl = '/public/admin/index.php/users/delete/' + id;
+        deleteUrl = '/public/admin/index.php/senderos/delete/' + id;
         $('#confirmDeleteModal').modal('show');
     }
 
@@ -117,7 +120,7 @@
             location.reload();
         }).catch(error => {
             $('#confirmDeleteModal').modal('hide');
-            showNotification('Error', 'Hubo un problema al eliminar el usuario.', 'error');
+            showNotification('Error', 'Hubo un problema al eliminar el sendero.', 'error');
         });
     });
 

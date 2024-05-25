@@ -3,101 +3,96 @@
 namespace App\Controllers;
 
 use App\Config\Database;
+use App\Models\User;
+use App\Helpers\Redirector;
 
-class UserController {
+class UserController extends Controller {
     private $conn;
+    private $user;
 
     public function __construct() {
         $database = new Database();
         $this->conn = $database->getConnection();
+        $this->user = new User($this->conn);
     }
 
     public function index() {
-        $query = "SELECT * FROM users";
-        $stmt = $this->conn->prepare($query);
-        $stmt->execute();
-
+        $stmt = $this->user->read();
         $users = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        $viewPath = dirname(__DIR__, 1) . '/Views/admin/users/index.php';
-        var_dump($viewPath);
-        if (file_exists($viewPath)) {
-            include $viewPath;
-        } else {
-            echo "File not found or not readable: " . $viewPath;
-        }
+
+        // Pasar los usuarios a la vista
+        include dirname(__DIR__, 1) . '/Views/admin/users/index.php';
     }
 
     public function create() {
-        $viewPath = dirname(__DIR__, 1) . '/Views/admin/users/create.php';
-        var_dump($viewPath);
-        if (file_exists($viewPath)) {
-            include $viewPath;
-        } else {
-            echo "File not found: " . $viewPath;
-        }
+        include dirname(__DIR__, 1) . '/Views/admin/users/create.php';
     }
 
     public function store($data) {
-        $query = "INSERT INTO users (username, password, email, role) VALUES (:username, :password, :email, :role)";
-        $stmt = $this->conn->prepare($query);
-        
-        $stmt->bindParam(':username', $data['username']);
-        $stmt->bindParam(':password', password_hash($data['password'], PASSWORD_DEFAULT));
-        $stmt->bindParam(':email', $data['email']);
-        $stmt->bindParam(':role', $data['role']);
-        
-        if ($stmt->execute()) {
-            header("Location: /public/admin/users");
-            exit();
+        $this->user->username = $data['username'];
+        $this->user->password = $data['password'];
+        $this->user->email = $data['email'];
+        $this->user->role = $data['role'];
+
+        if ($this->user->create()) {
+            $_SESSION['toast'] = [
+                'message' => 'Usuario creado exitosamente.',
+                'type' => 'success'
+            ];
+            Redirector::redirect('/public/admin/index.php/users');
         } else {
-            echo "Error al guardar el usuario.";
+            $_SESSION['toast'] = [
+                'message' => 'Error al crear el usuario.',
+                'type' => 'error'
+            ];
+            Redirector::redirect('/public/admin/index.php/users');
         }
     }
 
     public function edit($id) {
-        $query = "SELECT * FROM users WHERE id = :id";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':id', $id);
-        $stmt->execute();
-
-        $user = $stmt->fetch(\PDO::FETCH_ASSOC);
-        $viewPath = dirname(__DIR__, 2) . '/Views/admin/users/edit.php';
-        var_dump($viewPath);
-        if (file_exists($viewPath)) {
-            include $viewPath;
-        } else {
-            echo "File not found: " . $viewPath;
-        }
+        $this->user->id = $id;
+        $this->user->readOne();
+        
+        include dirname(__DIR__, 1) . '/Views/admin/users/edit.php';
     }
 
     public function update($id, $data) {
-        $query = "UPDATE users SET username = :username, password = :password, email = :email, role = :role WHERE id = :id";
-        $stmt = $this->conn->prepare($query);
-        
-        $stmt->bindParam(':id', $id);
-        $stmt->bindParam(':username', $data['username']);
-        $stmt->bindParam(':password', password_hash($data['password'], PASSWORD_DEFAULT));
-        $stmt->bindParam(':email', $data['email']);
-        $stmt->bindParam(':role', $data['role']);
-        
-        if ($stmt->execute()) {
-            header("Location: /public/admin/users");
-            exit();
+        $this->user->id = $id;
+        $this->user->username = $data['username'];
+        $this->user->password = $data['password'];
+        $this->user->email = $data['email'];
+        $this->user->role = $data['role'];
+
+        if ($this->user->update()) {
+            $_SESSION['toast'] = [
+                'message' => 'Usuario actualizado exitosamente.',
+                'type' => 'success'
+            ];
+            Redirector::redirect('/public/admin/index.php/users');
         } else {
-            echo "Error al actualizar el usuario.";
+            $_SESSION['toast'] = [
+                'message' => 'Error al actualizar el usuario.',
+                'type' => 'error'
+            ];
+            Redirector::redirect('/public/admin/index.php/users');
         }
     }
 
     public function delete($id) {
-        $query = "DELETE FROM users WHERE id = :id";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':id', $id);
-        
-        if ($stmt->execute()) {
-            header("Location: /public/admin/users");
-            exit();
+        $this->user->id = $id;
+        if ($this->user->delete()) {
+            $_SESSION['toast'] = [
+                'message' => 'Usuario eliminado exitosamente.',
+                'type' => 'success'
+            ];
+            Redirector::redirect('/public/admin/index.php/users');
         } else {
-            echo "Error al eliminar el usuario.";
+            $_SESSION['toast'] = [
+                'message' => 'Error al eliminar el usuario.',
+                'type' => 'error'
+            ];
+            Redirector::redirect('/public/admin/index.php/users');
         }
     }
 }
+?>

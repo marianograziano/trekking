@@ -6,7 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="/public/admin/adminlte/plugins/fontawesome-free/css/all.min.css">
     <link rel="stylesheet" href="/public/admin/adminlte/dist/css/adminlte.min.css">
-    <link rel="stylesheet" href="/public/css/style.css"> <!-- Asegúrate de que este archivo exista -->
+    <link rel="stylesheet" href="/public/css/style.css">
+    
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/public/admin/adminlte/plugins/bs-stepper/css/bs-stepper.min.css">
+ <!-- Asegúrate de que este archivo exista -->
 </head>
 <body class="hold-transition sidebar-mini">
 <body class="hold-transition sidebar-mini">
